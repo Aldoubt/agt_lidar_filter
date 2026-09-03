@@ -1,7 +1,9 @@
 #include "agt_lidar_filter/filters/blind_radius_filter.hpp"
 
+#include <pcl/point_types.h>
+#include <pcl_conversions/pcl_conversions.h>
+
 #include <cmath>
-#include <sensor_msgs/point_cloud2_iterator.hpp>
 
 namespace agt_lidar_filter
 {
@@ -16,9 +18,9 @@ std::string BlindRadiusFilter::name() const
   return "blind_radius";
 }
 
-bool BlindRadiusFilter::configure(double radius)
+bool BlindRadiusFilter::configure(const std::string & namespace_name)
 {
-  radius_ = radius;
+  (void)namespace_name;
   return true;
 }
 
@@ -26,14 +28,25 @@ bool BlindRadiusFilter::process(
   const sensor_msgs::msg::PointCloud2 & input,
   sensor_msgs::msg::PointCloud2 & output)
 {
-  output = input;
+  pcl::PointCloud<pcl::PointXYZI> cloud;
+  pcl::fromROSMsg(input, cloud);
 
-  sensor_msgs::PointCloud2Modifier modifier(output);
-  modifier.resize(0);
+  pcl::PointCloud<pcl::PointXYZI> filtered;
+  filtered.reserve(cloud.size());
 
-  sensor_msgs::PointCloud2Modifier input_modifier(output);
-  (void)input_modifier;
+  for (const auto & point : cloud.points) {
+    const double distance = std::sqrt(
+      point.x * point.x +
+      point.y * point.y +
+      point.z * point.z);
 
+    if (distance >= radius_) {
+      filtered.push_back(point);
+    }
+  }
+
+  pcl::toROSMsg(filtered, output);
+  output.header = input.header;
   return true;
 }
 
