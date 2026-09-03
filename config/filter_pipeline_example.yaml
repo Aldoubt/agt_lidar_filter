@@ -1,0 +1,19 @@
+# agt_lidar_filter pipeline example for Livox MID360
+
+sensor_model: mid360
+
+input_topic: /livox/lidar
+output_topic: /agt/lidar_filtered
+
+filters:
+  # Available filter names reserved by the plugin interface
+  # - blind_radius
+  # - cropbox
+  # - angular_mask
+  # - voxel
+
+  enabled: []
+
+benchmark:
+  enable_statistics: true
+  publish_removed_ratio: true
