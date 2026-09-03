@@ -1,0 +1,29 @@
+agt_lidar_filter_node:
+  ros__parameters:
+    input_topic: /livox/lidar
+    output_topic: /agt/lidar_filtered
+
+    sensor_model: mid360
+
+    pipeline:
+      - blind_radius
+      - cropbox
+      - angular_mask
+
+    blind_radius:
+      enabled: false
+      radius: 0.8
+
+    cropbox:
+      enabled: false
+      min_x: -1.2
+      max_x: 1.2
+      min_y: -1.0
+      max_y: 1.0
+      min_z: -0.5
+      max_z: 0.5
+
+    angular_mask:
+      enabled: false
+      pitch_min: -45.0
+      pitch_max: 20.0
